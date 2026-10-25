@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>print-buddy</Name>
-  <Repository>ghcr.io/catduckgnaf/print-buddy:2.1.1@sha256:1a958282f0451be748c76c5102c982ea358ed8b02f4fe4eede549de8a1c86488</Repository>
+  <Repository>ghcr.io/catduckgnaf/print-buddy:2.1.1</Repository>
   <Registry>https://github.com/catduckgnaf/print-buddy/pkgs/container/print-buddy</Registry>
   <Network>bridge</Network>
   <Privileged>false</Privileged>
@@ -9,7 +9,7 @@
   <Project>https://github.com/catduckgnaf/print-buddy</Project>
   <Overview>Print Buddy is an offline-capable assistant for managing 3D printer workflows. This template runs the standalone Discord bot. It does not start a printer, connect to a printer, or enable the optional Moonraker event listener.
 
-Image 2.1.1 is pinned to the published amd64 build verified by GitHub Actions run 40215865983. Build evidence reports image digest sha256:1a958282f0451be748c76c5102c982ea358ed8b02f4fe4eede549de8a1c86488; the image configuration identifies version 2.1.1 and source revision bd21489d41221296918491acd96af7ef031d702e.</Overview>
+Image tag 2.1.1 selects the published amd64 build verified by GitHub Actions run 40215865983. The plain version tag is used for Community Applications scanner compatibility. Anonymous registry access verified digest sha256:1a958282f0451be748c76c5102c982ea358ed8b02f4fe4eede549de8a1c86488; build evidence identifies version 2.1.1 and source revision bd21489d41221296918491acd96af7ef031d702e.</Overview>
   <Category>Productivity:Tools:Other:</Category>
   <WebUI/>
   <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/print-buddy.xml</TemplateURL>
