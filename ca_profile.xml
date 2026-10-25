@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommunityApplications>
+  <Profile>
+Unraid Docker templates maintained by catduck. Currently: **Mealie** (self-hosted recipe manager and meal planner), moved here from the Selfhosters repository. More templates, including Print Buddy, will follow.
+
+Support for every template in this repository is in the catduck templates forum thread. Template bugs can also be reported as GitHub issues.
+  </Profile>
+  <Icon>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/img/mealiev1.png</Icon>
+  <WebPage>https://github.com/catduckgnaf/catduck-unraid-templates</WebPage>
+  <Forum>https://forums.unraid.net/topic/138058-support-catduck-templates/</Forum>
+</CommunityApplications>
