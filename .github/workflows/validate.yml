@@ -1,0 +1,30 @@
+name: Validate templates
+
+on:
+  push:
+    paths:
+      - 'templates/*.xml'
+      - '.github/workflows/validate.yml'
+      - '.github/scripts/check.py'
+  pull_request:
+    paths:
+      - 'templates/*.xml'
+      - '.github/workflows/validate.yml'
+      - '.github/scripts/check.py'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+      - name: Validate XML syntax
+        run: |
+          shopt -s nullglob
+          files=(templates/*.xml)
+          test ${#files[@]} -gt 0
+          for file in "${files[@]}"; do xmllint --noout "$file"; done
+      - name: Check template conventions
+        run: python3 .github/scripts/check.py --files templates/*.xml
