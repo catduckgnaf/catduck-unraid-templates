@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>print-buddy</Name>
+  <Repository>ghcr.io/catduckgnaf/print-buddy:2.1.1@sha256:1a958282f0451be748c76c5102c982ea358ed8b02f4fe4eede549de8a1c86488</Repository>
+  <Registry>https://github.com/catduckgnaf/print-buddy/pkgs/container/print-buddy</Registry>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+  <Project>https://github.com/catduckgnaf/print-buddy</Project>
+  <Overview>Print Buddy is an offline-capable assistant for managing 3D printer workflows. This template runs the standalone Discord bot. It does not start a printer, connect to a printer, or enable the optional Moonraker event listener.
+
+Image 2.1.1 is pinned to the published amd64 build verified by GitHub Actions run 40215865983. Build evidence reports image digest sha256:1a958282f0451be748c76c5102c982ea358ed8b02f4fe4eede549de8a1c86488; the image configuration identifies version 2.1.1 and source revision bd21489d41221296918491acd96af7ef031d702e.</Overview>
+  <Category>Productivity:Tools:Other:</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/print-buddy.xml</TemplateURL>
+  <Icon/>
+  <ExtraParams>--cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 2g --cpus 2 --restart unless-stopped --health-cmd &quot;python3 -m print_buddy.bot health&quot; --health-interval 30s --health-timeout 10s --health-start-period 60s --health-retries 3</ExtraParams>
+  <PostArgs>python3 -m print_buddy.bot</PostArgs>
+  <Config Name="App data" Target="/data" Default="/mnt/user/appdata/print-buddy" Mode="rw" Description="Persistent Print Buddy configuration and data" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/print-buddy</Config>
+  <Config Name="Discord bot token" Target="PRINT_BUDDY__BOT__TOKEN" Default="" Mode="" Description="Discord bot token. Leave empty to keep the bot disabled until configured." Type="Variable" Display="always" Required="false" Mask="true"></Config>
+  <Config Name="Discord application ID" Target="PRINT_BUDDY__BOT__APPLICATION_ID" Default="" Mode="" Description="Discord application ID" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="Discord guild ID" Target="PRINT_BUDDY__BOT__GUILD_ID" Default="" Mode="" Description="Discord guild ID" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="Discord community channel ID" Target="PRINT_BUDDY__BOT__COMMUNITY_CHANNEL_ID" Default="" Mode="" Description="Discord channel ID" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="Discord admin role ID" Target="PRINT_BUDDY__BOT__ADMIN_ROLE_ID" Default="" Mode="" Description="Discord role ID allowed to use admin commands" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="Bot mode" Target="PRINT_BUDDY__BOT__MODE" Default="" Mode="" Description="Run the standalone Discord bot" Type="Variable" Display="advanced" Required="true" Mask="false">standalone</Config>
+  <Config Name="Timezone" Target="TZ" Default="" Mode="" Description="Container timezone, for example America/New_York" Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+</Container>
