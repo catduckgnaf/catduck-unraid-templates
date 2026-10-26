@@ -1,27 +1,42 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>print-buddy</Name>
-  <Repository>ghcr.io/catduckgnaf/print-buddy:2.1.1</Repository>
+  <Repository>ghcr.io/catduckgnaf/print-buddy:2.1.2</Repository>
   <Registry>https://github.com/catduckgnaf/print-buddy/pkgs/container/print-buddy</Registry>
   <Network>bridge</Network>
-  <Privileged>false</Privileged>
+    <Privileged>false</Privileged>
   <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
   <Project>https://github.com/catduckgnaf/print-buddy</Project>
-  <Overview>Print Buddy is an offline-capable assistant for managing 3D printer workflows. This template runs the standalone Discord bot. It does not start a printer, connect to a printer, or enable the optional Moonraker event listener.
+  <Overview>Print Buddy 2.1.2 runs everything in ONE container: the Discord bot, the Moonraker listener, OrcaSlicer (stable 2.4.2 or alpha 2.5.0-alpha, chosen with PRINT_BUDDY_ORCA_CHANNEL) and the bundled Spoolman API under one supervisor. Print Buddy is the interface; Spoolman's web UI is not included. The Spoolman API listens on 127.0.0.1:8000 inside the container and no port is published. Printers are external services.
 
-Image tag 2.1.1 selects the published amd64 build verified by GitHub Actions run 40215865983. The plain version tag is used for Community Applications scanner compatibility. Anonymous registry access verified digest sha256:1a958282f0451be748c76c5102c982ea358ed8b02f4fe4eede549de8a1c86488; build evidence identifies version 2.1.1 and source revision bd21489d41221296918491acd96af7ef031d702e.</Overview>
+UPGRADE FROM 2.1.1: the three old containers are replaced by this one. Stop the old bot, listener and Spoolman containers first, and point the Spoolman Data path at your existing Spoolman data so inventory carries over (the database migrates forward on startup; there is no automatic downgrade, and nothing is migrated for you). Leave the Discord token empty to stage and validate first: the listener and Spoolman run while the bot stays idle. Never run the old and new Discord bots at the same time.
+
+The variables below are the ones the 2.1.2 image actually reads: they mirror the Docker Compose / DockerMan contract in the print-buddy repository (docker-compose.yml, .env.example and docker/unraid/print-buddy.xml).
+
+Image tag 2.1.2 selects the published amd64 build verified by GitHub Actions run 40250181754. The plain version tag is used for Community Applications scanner compatibility. Anonymous registry access verified digest sha256:b3810664084369362b9114df616ad537fda0bb7f8fa3d78c1060de565c4236ae; build evidence identifies version 2.1.2 and source revision e0e5010a0fd845c55a7eaa3d52a7b6b1ffa87da6.</Overview>
   <Category>Productivity:Tools:Other:</Category>
   <WebUI/>
   <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/print-buddy.xml</TemplateURL>
   <Icon/>
-  <ExtraParams>--cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 2g --cpus 2 --restart unless-stopped --health-cmd &quot;python3 -m print_buddy.bot health&quot; --health-interval 30s --health-timeout 10s --health-start-period 60s --health-retries 3</ExtraParams>
-  <PostArgs>python3 -m print_buddy.bot</PostArgs>
-  <Config Name="App data" Target="/data" Default="/mnt/user/appdata/print-buddy" Mode="rw" Description="Persistent Print Buddy configuration and data" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/print-buddy</Config>
-  <Config Name="Discord bot token" Target="PRINT_BUDDY__BOT__TOKEN" Default="" Mode="" Description="Discord bot token. Leave empty to keep the bot disabled until configured." Type="Variable" Display="always" Required="false" Mask="true"></Config>
-  <Config Name="Discord application ID" Target="PRINT_BUDDY__BOT__APPLICATION_ID" Default="" Mode="" Description="Discord application ID" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
-  <Config Name="Discord guild ID" Target="PRINT_BUDDY__BOT__GUILD_ID" Default="" Mode="" Description="Discord guild ID" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
-  <Config Name="Discord community channel ID" Target="PRINT_BUDDY__BOT__COMMUNITY_CHANNEL_ID" Default="" Mode="" Description="Discord channel ID" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
-  <Config Name="Discord admin role ID" Target="PRINT_BUDDY__BOT__ADMIN_ROLE_ID" Default="" Mode="" Description="Discord role ID allowed to use admin commands" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
-  <Config Name="Bot mode" Target="PRINT_BUDDY__BOT__MODE" Default="" Mode="" Description="Run the standalone Discord bot" Type="Variable" Display="advanced" Required="true" Mask="false">standalone</Config>
-  <Config Name="Timezone" Target="TZ" Default="" Mode="" Description="Container timezone, for example America/New_York" Type="Variable" Display="advanced" Required="false" Mask="false">America/New_York</Config>
+  <ExtraParams>--user 1000:1000 --cap-drop ALL --security-opt no-new-privileges:true --pids-limit 256 --memory 2g --cpus 2 --shm-size 256m --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --restart unless-stopped --health-cmd &quot;python3 /usr/local/bin/print-buddy-healthcheck&quot; --health-interval 30s --health-timeout 10s --health-start-period 90s --health-retries 3</ExtraParams>
+  <PostArgs/>
+    <Requires>Appdata paths owned by UID/GID 1000. Existing Spoolman data can be copied into the Spoolman Data path before first start; nothing is migrated automatically.</Requires>
+  <Config Name="State" Target="/data/hermes" Default="/mnt/user/appdata/print-buddy/hermes" Mode="rw" Description="Runtime state, prompts, hardware and job records. Back this up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/print-buddy/hermes</Config>
+  <Config Name="Archive" Target="/data/archive" Default="/mnt/user/appdata/print-buddy/archive" Mode="rw" Description="Sliced jobs and G-code. Back this up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/print-buddy/archive</Config>
+  <Config Name="Records" Target="/data/records" Default="/mnt/user/appdata/print-buddy/records" Mode="rw" Description="Print records. Back this up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/print-buddy/records</Config>
+  <Config Name="Cache" Target="/data/cache" Default="/mnt/user/appdata/print-buddy/cache" Mode="rw" Description="Regenerable cache." Type="Path" Display="advanced" Required="true" Mask="false">/mnt/user/appdata/print-buddy/cache</Config>
+  <Config Name="Spoolman data" Target="/data/spoolman" Default="/mnt/user/appdata/print-buddy/spoolman" Mode="rw" Description="Bundled Spoolman database, config, logs and backups. Back this up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/print-buddy/spoolman</Config>
+  <Config Name="Settings file" Target="PRINT_BUDDY_CONFIG" Default="/app/config/docker.yaml" Mode="" Description="Leave as is, or point at a mounted YAML file for list settings." Type="Variable" Display="advanced" Required="true" Mask="false">/app/config/docker.yaml</Config>
+  <Config Name="Bot mode" Target="PRINT_BUDDY__BOT__MODE" Default="standalone" Mode="" Description="Must be standalone in Docker." Type="Variable" Display="advanced" Required="true" Mask="false">standalone</Config>
+  <Config Name="Discord bot token" Target="DISCORD_BOT_TOKEN" Default="" Mode="" Description="Secret. Leave empty to stage the listener and Spoolman without the Discord bot." Type="Variable" Display="always" Required="false" Mask="true"></Config>
+  <Config Name="Discord channel ID" Target="PRINT_BUDDY__DISCORD__CHAT_ID" Default="" Mode="" Description="Channel Print Buddy uses." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Allowed user IDs" Target="PRINT_BUDDY__DISCORD__ALLOWED_USER_IDS" Default="" Mode="" Description="Discord user IDs allowed to use the bot, comma or space separated." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Printer model" Target="PRINT_BUDDY__PRINTER__MODEL" Default="flashforge.ad5x|sovol.sv06|klipper.generic|octoprint.marlin" Mode="" Description="flashforge.ad5x, sovol.sv06, klipper.generic or octoprint.marlin." Type="Variable" Display="always" Required="false" Mask="false">flashforge.ad5x</Config>
+  <Config Name="Moonraker URL" Target="PRINT_BUDDY__SERVICES__MOONRAKER_URL" Default="" Mode="" Description="Klipper printers, for example http://printer.example:7125. Fluidd is not needed here." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="OctoPrint URL" Target="PRINT_BUDDY__SERVICES__OCTOPRINT_URL" Default="" Mode="" Description="octoprint.marlin printers only." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="OctoPrint API key" Target="OCTOPRINT_API_KEY" Default="" Mode="" Description="Secret, octoprint.marlin printers only." Type="Variable" Display="always" Required="false" Mask="true"></Config>
+  <Config Name="Spoolman URL" Target="PRINT_BUDDY__SERVICES__SPOOLMAN_URL" Default="http://127.0.0.1:8000" Mode="" Description="Bundled Spoolman API by default. To use an existing external Spoolman, set its URL here and set Bundled Spoolman to false; nothing is migrated." Type="Variable" Display="always" Required="false" Mask="false">http://127.0.0.1:8000</Config>
+  <Config Name="Bundled Spoolman" Target="PRINT_BUDDY_BUNDLED_SPOOLMAN" Default="true" Mode="" Description="true runs the bundled Spoolman API; false uses the external Spoolman URL." Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="OrcaSlicer channel" Target="PRINT_BUDDY_ORCA_CHANNEL" Default="stable" Mode="" Description="Bundled OrcaSlicer channel selected at startup: stable (default) or alpha. Any other value stops the container at startup." Type="Variable" Display="advanced" Required="false" Mask="false">stable</Config>
+  <Config Name="Container timezone" Target="TZ" Default="UTC" Mode="" Description="Container timezone, an IANA name such as UTC. Print Buddy schedules use the discord.timezone setting; TZ covers container logs, the OS clock and the bundled Spoolman." Type="Variable" Display="advanced" Required="false" Mask="false">UTC</Config>
 </Container>
