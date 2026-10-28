@@ -8,7 +8,7 @@
   <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
   <Project>https://github.com/catduckgnaf/print-buddy</Project>
   <Deprecated>true</Deprecated>
-  <Overview>DEPRECATED: Print Buddy is now Print Handy. Install the print-handy-nightly template instead; this image no longer receives updates. Existing installs migrate by hand (appdata, state file names and PRINT_BUDDY__ to PRINT_HANDY__ variables): https://github.com/catduckgnaf/print-handy/blob/main/docs/RENAME-MIGRATION.md
+  <Overview>DEPRECATED: Print Buddy is now Print Handy. Install the print-handy template and choose the nightly tag; this image no longer receives updates. Existing installs migrate by hand (appdata, state file names and PRINT_BUDDY__ to PRINT_HANDY__ variables): https://github.com/catduckgnaf/print-handy/blob/main/docs/RENAME-MIGRATION.md
 
 Print Buddy NIGHTLY is the development build of Print Buddy in the same ONE container as the stable template: the Discord bot, the Moonraker listener, OrcaSlicer (stable 2.4.2 or alpha 2.5.0-alpha, chosen with PRINT_BUDDY_ORCA_CHANNEL) and the bundled Spoolman API under one supervisor. Print Buddy is the interface; Spoolman's web UI is not included. The Spoolman API listens on 127.0.0.1:8000 inside the container and no port is published. Printers are external services.
 

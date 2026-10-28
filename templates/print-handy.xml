@@ -1,15 +1,23 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>print-handy</Name>
-  <Repository>ghcr.io/catduckgnaf/print-handy:latest</Repository>
+  <Repository>ghcr.io/catduckgnaf/print-handy</Repository>
   <Registry>https://github.com/catduckgnaf/print-handy/pkgs/container/print-handy</Registry>
+  <Branch>
+    <Tag>latest</Tag>
+    <TagDescription>Stable. Moves only when a new Print Handy release is published. Recommended for a printer you rely on.</TagDescription>
+  </Branch>
+  <Branch>
+    <Tag>nightly</Tag>
+    <TagDescription>Development build, rebuilt nightly from main after the full CI suite passes. Features may be unfinished and settings may change without a release note.</TagDescription>
+  </Branch>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>bash</Shell>
   <Privileged>false</Privileged>
   <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
   <Project>https://github.com/catduckgnaf/print-handy</Project>
-  <Overview>Print Handy Discord bot, Moonraker listener, OrcaSlicer and the bundled Spoolman API in one supervised container. Includes the alert-only camera watchdog: spaghetti, detached-part, empty-bed and stall checks post a camera photo to Discord (tune it with the Camera watch variables). Print Handy is the interface; Spoolman's web UI is not included. The Spoolman API listens on 127.0.0.1:8000 inside the container and no port is published by default; the advanced Spoolman port and SPOOLMAN_HOST fields below expose it on the LAN only when you opt in (#443). The Web UI (simple status plus picker configuration that syncs to the YAML settings) is enabled by this template so the WebUI link above works — but it only starts once the Web UI access token below is set, because the template binds it on all interfaces; without a token it stays off and the container log says why (#440). Printers are external services. UPGRADE NOTE — this project was renamed from Print Buddy to Print Handy, and this template is a NEW Community Applications app (the old one was print-buddy): existing Print Buddy installs do not auto-migrate. Install this template, copy your old appdata (/mnt/user/appdata/print-buddy) into the new print-handy appdata paths (renaming any print_buddy_* state files to print_handy_*), move the configuration values across from the old PRINT_BUDDY__... names to the new PRINT_HANDY__... variable names, start this container and check it is healthy, then remove the old app. Full steps are in https://github.com/catduckgnaf/print-handy/blob/main/docs/RENAME-MIGRATION.md.</Overview>
+  <Overview>Print Handy Discord bot, Moonraker listener, OrcaSlicer and the bundled Spoolman API in one supervised container. Includes the alert-only camera watchdog: spaghetti, detached-part, empty-bed and stall checks post a camera photo to Discord (tune it with the Camera watch variables). Print Handy is the interface; Spoolman's web UI is not included. The Spoolman API listens on 127.0.0.1:8000 inside the container and no port is published by default; the advanced Spoolman port and SPOOLMAN_HOST fields below expose it on the LAN only when you opt in (#443). The Web UI (simple status plus picker configuration that syncs to the YAML settings) is enabled by this template so the WebUI link above works — but it only starts once the Web UI access token below is set, because the template binds it on all interfaces; without a token it stays off and the container log says why (#440). Printers are external services. UPGRADE NOTE — this project was renamed from Print Buddy to Print Handy, and this template is a NEW Community Applications app (the old one was print-buddy): existing Print Buddy installs do not auto-migrate. Install this template, copy your old appdata (/mnt/user/appdata/print-buddy) into the new print-handy appdata paths (renaming any print_buddy_* state files to print_handy_*), move the configuration values across from the old PRINT_BUDDY__... names to the new PRINT_HANDY__... variable names, start this container and check it is healthy, then remove the old app. Full steps are in https://github.com/catduckgnaf/print-handy/blob/main/docs/RENAME-MIGRATION.md. CHOOSING A TAG: pick latest (stable, the default) or nightly in the Tag field when you install. latest moves only when a new release is published. nightly is rebuilt every night from the newest main commit that passed the full CI suite; features may be unfinished and settings may change without a release note. Use latest for a printer you rely on, and nightly to try current code or confirm a fix before it ships. Never run a nightly and a stable container with the same bot token at the same time.</Overview>
   <Category>Productivity:Tools:Other:</Category>
   <WebUI>http://[IP]:[PORT:8088]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/print-handy.xml</TemplateURL>
