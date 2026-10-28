@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CommunityApplications>
   <Profile>
-Currently: **Mealie** (self-hosted recipe manager and meal planner), moved here from the Selfhosters repository. **Print Buddy** (standalone Discord bot, published 2.1.1 image).
+Currently: **Mealie** (self-hosted recipe manager and meal planner), moved here from the Selfhosters repository. **Print Handy** (3D print preparation and monitoring from Discord, Telegram or Matrix, with a stable and a nightly template). The old Print Buddy templates are deprecated; Print Buddy was renamed to Print Handy.
 
 Support for every template in this repository is in the catduck templates forum thread. Template bugs can also be reported as GitHub issues.
   </Profile>

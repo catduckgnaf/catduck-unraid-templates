@@ -7,7 +7,10 @@
     <Privileged>false</Privileged>
   <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
   <Project>https://github.com/catduckgnaf/print-buddy</Project>
-  <Overview>Print Buddy runs everything in ONE container: the Discord bot, the Moonraker listener, OrcaSlicer (stable 2.4.2 or alpha 2.5.0-alpha, chosen with PRINT_BUDDY_ORCA_CHANNEL) and the bundled Spoolman API under one supervisor. Print Buddy is the interface; Spoolman's web UI is not included. The Spoolman API listens on 127.0.0.1:8000 inside the container and no port is published. Printers are external services.
+  <Deprecated>true</Deprecated>
+  <Overview>DEPRECATED: Print Buddy is now Print Handy. Install the print-handy template instead; this image no longer receives updates. Existing installs migrate by hand (appdata, state file names and PRINT_BUDDY__ to PRINT_HANDY__ variables): https://github.com/catduckgnaf/print-handy/blob/main/docs/RENAME-MIGRATION.md
+
+Print Buddy runs everything in ONE container: the Discord bot, the Moonraker listener, OrcaSlicer (stable 2.4.2 or alpha 2.5.0-alpha, chosen with PRINT_BUDDY_ORCA_CHANNEL) and the bundled Spoolman API under one supervisor. Print Buddy is the interface; Spoolman's web UI is not included. The Spoolman API listens on 127.0.0.1:8000 inside the container and no port is published. Printers are external services.
 
 UPGRADE FROM 2.1.1: the three old containers are replaced by this one. Stop the old bot, listener and Spoolman containers first, and point the Spoolman Data path at your existing Spoolman data so inventory carries over (the database migrates forward on startup; there is no automatic downgrade, and nothing is migrated for you). Leave the Discord token empty to stage and validate first: the listener and Spoolman run while the bot stays idle. Never run the old and new Discord bots at the same time.
 
