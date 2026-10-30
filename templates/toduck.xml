@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>toduck</Name>
+  <Repository>ghcr.io/catduckgnaf/toduck:latest</Repository>
+  <Registry>https://github.com/catduckgnaf/Toduck/pkgs/container/toduck</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+  <Project>https://github.com/catduckgnaf/Toduck</Project>
+  <Overview>Toduck is a calm, local-first task manager with repeating tasks, categories, projects, search, and import/export. This container serves the responsive Web UI and the /v1/state sync API from a single image, so your Web and Android clients sync against your own server instead of a cloud account. Tasks stay in browser storage until you connect a client to this server. The Toduck auth token below is the admin credential: it is required, must be at least 32 characters, and the container refuses to start without it. Additional users can be created by the admin in the Web UI (Settings, Users) and get their own personal tokens for sharing tasks. State is stored as /data/state.json in the Appdata Storage path, with state.json.bak kept as the last known good copy; back up that whole path. Use TLS or a trusted private network (for example Tailscale or a VPN) if you expose Toduck beyond your LAN. Renamed from Cat2Duck: existing manual Cat2Duck installs keep working on the same /data directory — just point the image at ghcr.io/catduckgnaf/toduck and rename CADENCE_TOKEN to TODUCK_TOKEN (and CADENCE_ALLOWED_ORIGINS to TODUCK_ALLOWED_ORIGINS); there is no fallback for the old variable names.</Overview>
+  <Category>Productivity:Tools:</Category>
+  <WebUI>http://[IP]:[PORT:8787]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/toduck.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/img/toduck.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="Web &amp; Sync Port" Target="8787" Default="8793" Mode="tcp" Description="Host port for the Web UI and sync API (use 8793 to avoid a collision with Readarr on 8787)" Type="Port" Display="always" Required="true" Mask="false">8793</Config>
+  <Config Name="Appdata Storage" Target="/data" Default="/mnt/user/appdata/toduck" Mode="rw" Description="Persistent directory for state.json and its state.json.bak backup. Back this up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/toduck</Config>
+  <Config Name="Toduck Auth Token" Target="TODUCK_TOKEN" Default="" Mode="" Description="Secret. Admin bearer token used by Web and Android clients to sync; must be at least 32 characters (for example the output of: openssl rand -hex 32). The container refuses to start without it." Type="Variable" Display="always" Required="true" Mask="true"/>
+  <Config Name="Allowed Origins" Target="TODUCK_ALLOWED_ORIGINS" Default="" Mode="" Description="Optional comma-separated list of origins allowed to call the sync API cross-origin, for example https://tasks.example.com. Leave empty for the normal same-origin Web UI and app use." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Port Variable" Target="PORT" Default="8787" Mode="" Description="Internal container port" Type="Variable" Display="advanced" Required="false" Mask="false">8787</Config>
+  <Config Name="Data Path Variable" Target="DATA_PATH" Default="/data/state.json" Mode="" Description="Internal path to the JSON state file" Type="Variable" Display="advanced" Required="false" Mask="false">/data/state.json</Config>
+  <Config Name="Static Assets Dir" Target="STATIC_DIR" Default="/app/static" Mode="" Description="Internal path to the built Web UI" Type="Variable" Display="advanced" Required="false" Mask="false">/app/static</Config>
+</Container>

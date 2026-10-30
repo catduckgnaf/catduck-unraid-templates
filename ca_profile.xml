@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CommunityApplications>
   <Profile>
-Currently: **Mealie** (self-hosted recipe manager and meal planner), moved here from the Selfhosters repository. **Print Handy** (3D print preparation and monitoring from Discord, Telegram or Matrix, one template with a stable or nightly tag choice). The old Print Buddy templates are deprecated; Print Buddy was renamed to Print Handy.
+Currently: **Mealie** (self-hosted recipe manager and meal planner), moved here from the Selfhosters repository. **Print Handy** (3D print preparation and monitoring from Discord, Telegram or Matrix, one template with a stable or nightly tag choice). **Toduck** (local-first task manager with repeating tasks and self-hosted sync for Web and Android). The old Print Buddy templates are deprecated; Print Buddy was renamed to Print Handy.
 
 Support for every template in this repository is in the catduck templates forum thread. Template bugs can also be reported as GitHub issues.
   </Profile>
