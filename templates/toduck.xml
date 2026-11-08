@@ -21,7 +21,7 @@
   <DonateText/>
   <DonateLink/>
   <Requires/>
-  <Config Name="Web & Sync Port" Target="8787" Default="8793" Mode="tcp" Description="Host port for the Web UI and sync API (use 8793 to avoid a collision with Readarr on 8787)" Type="Port" Display="always" Required="true" Mask="false">8793</Config>
+  <Config Name="Web &amp; Sync Port" Target="8787" Default="8793" Mode="tcp" Description="Host port for the Web UI and sync API (use 8793 to avoid a collision with Readarr on 8787)" Type="Port" Display="always" Required="true" Mask="false">8793</Config>
   <Config Name="Appdata Storage" Target="/data" Default="/mnt/user/appdata/toduck" Mode="rw" Description="Persistent directory for state.json and its state.json.bak backup. Back this up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/toduck</Config>
   <Config Name="Toduck Auth Token" Target="TODUCK_TOKEN" Default="" Mode="" Description="Secret. Admin bearer token used by Web and Android clients to sync; must be at least 32 characters (for example the output of: openssl rand -hex 32). The container refuses to start without it." Type="Variable" Display="always" Required="true" Mask="true"/>
   <Config Name="Allowed Origins" Target="TODUCK_ALLOWED_ORIGINS" Default="" Mode="" Description="Optional comma-separated list of origins allowed to call the sync API cross-origin, for example https://tasks.example.com. Leave empty for the normal same-origin Web UI and app use." Type="Variable" Display="advanced" Required="false" Mask="false"/>
