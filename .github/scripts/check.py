@@ -26,6 +26,14 @@ def check_xml(filename):
         value = root.findtext(tag)
         if value and not value.startswith(("https://", "http://")):
             errors.append(f"{tag} must be an HTTP(S) URL")
+    repository = (root.findtext("Repository") or "").strip()
+    tag = repository.rsplit("/", 1)[-1].partition(":")[2]
+    if "@sha256:" in repository or re.fullmatch(r"v?\d+(\.\d+)*([-.+].*)?", tag):
+        errors.append(f"Repository must not pin a version or digest: {repository}")
+    for branch in root.findall("Branch"):
+        branch_tag = (branch.findtext("Tag") or "").strip()
+        if re.fullmatch(r"v?\d+(\.\d+)*([-.+].*)?", branch_tag):
+            errors.append(f"Branch tag must not pin a version: {branch_tag}")
     for config in root.findall("Config"):
         if config.get("Name") == "SMTP_PASSWORD":
             if config.get("Mask") != "true" or (config.text or "").strip():
