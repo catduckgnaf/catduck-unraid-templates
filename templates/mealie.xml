@@ -3,6 +3,14 @@
   <Name>mealiev1</Name>
   <Repository>ghcr.io/mealie-recipes/mealie:latest</Repository>
   <Registry>https://github.com/mealie-recipes/mealie/pkgs/container/mealie</Registry>
+  <Branch>
+    <Tag>latest</Tag>
+    <TagDescription>Stable. Follows the newest published Mealie release, so Unraid offers each new release as a normal container update. Recommended.</TagDescription>
+  </Branch>
+  <Branch>
+    <Tag>nightly</Tag>
+    <TagDescription>Development build, rebuilt from every commit to the mealie-next branch. Gets fixes and features early and may contain bugs.</TagDescription>
+  </Branch>
   <Network>bridge</Network>
   <Privileged>false</Privileged>
   <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
