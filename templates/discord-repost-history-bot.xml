@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>discord-repost-history-bot</Name>
+  <Repository>ghcr.io/catduckgnaf/discord-repost-history-bot:latest</Repository>
+  <Registry>https://github.com/catduckgnaf/discord-repost-history-bot/pkgs/container/discord-repost-history-bot</Registry>
+  <Branch>
+    <Tag>latest</Tag>
+    <TagDescription>Stable. Follows the newest build published from the main branch, so Unraid offers each new build as a normal container update. Recommended.</TagDescription>
+  </Branch>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+  <Project>https://github.com/catduckgnaf/discord-repost-history-bot</Project>
+  <Overview>FeverDream is a Discord bot that copies messages from one Discord server to another. With /link-add it live-forwards every new message from a source channel to a target channel, preserving the original author's name and avatar through a "FeverDream Relay" webhook. With /repost-history it bulk-reposts a channel's whole history into a target channel, oldest first, with live progress status (/repost-status, /repost-stop). With /broadcast it sends one message to many channels at once. Channel links are stored in the Appdata folder and persist across restarts; running repost jobs are kept in memory only and do not resume after a restart.
+
+There is no Web UI and no port to open.
+
+SETUP, in order:
+1. Go to the Discord Developer Portal (https://discord.com/developers/applications), create a New Application named FeverDream, open the Bot section, click Reset Token and copy the Bot Token.
+2. In the same Bot section, enable the MESSAGE CONTENT INTENT under Privileged Gateway Intents.
+3. In OAuth2, URL Generator, check the scopes bot and applications.commands and the bot permissions Send Messages, Manage Webhooks, Read Message History, View Channels, Attach Files and Embed Links. Open the generated URL and invite the bot to BOTH the source and the target server.
+4. Before the first start, run in the Unraid terminal: chown -R 1000:1000 /mnt/user/appdata/discord-repost-history-bot (the container runs as UID/GID 1000 and must be able to write its data folder).
+5. Set the Discord Bot Token below and start the container. Commands: /link-add, /link-remove, /link-list, /repost-history, /repost-status, /repost-stop, /broadcast.</Overview>
+  <Category>Tools:Utilities</Category>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/discord-repost-history-bot.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/img/discord-repost-history-bot.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Appdata path must be owned by UID/GID 1000. Before the first start, run: chown -R 1000:1000 /mnt/user/appdata/discord-repost-history-bot</Requires>
+  <Config Name="Appdata Storage" Target="/app/data" Default="/mnt/user/appdata/discord-repost-history-bot" Mode="rw" Description="Persistent storage for the bot's channel links (data/links.json), so links survive restarts. This folder must be owned by UID/GID 1000: chown -R 1000:1000 /mnt/user/appdata/discord-repost-history-bot" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/discord-repost-history-bot</Config>
+  <Config Name="Discord Bot Token" Target="DISCORD_TOKEN" Default="" Mode="" Description="Bot token from the Discord Developer Portal (your application, Bot section, Reset Token). The container exits immediately if this is empty." Type="Variable" Display="always" Required="true" Mask="true"/>
+  <Config Name="Dev Guild ID (optional)" Target="DEV_GUILD_ID" Default="" Mode="" Description="Optional server (guild) ID. When set, slash commands sync instantly to just this server. Leave empty for global sync, which can take up to about an hour." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Container Timezone" Target="TZ" Default="America/New_York" Mode="" Description="IANA timezone for the container's local time (e.g. America/New_York, Europe/London, America/Chicago). Controls log timestamps." Type="Variable" Display="always" Required="false" Mask="false">America/New_York</Config>
+</Container>
