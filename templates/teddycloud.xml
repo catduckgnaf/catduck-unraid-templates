@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>teddycloud</Name>
+  <Repository>ghcr.io/toniebox-reverse-engineering/teddycloud:latest</Repository>
+  <Registry>https://github.com/toniebox-reverse-engineering/teddycloud/pkgs/container/teddycloud</Registry>
+  <Branch>
+    <Tag>latest</Tag>
+    <TagDescription>Stable. Follows the newest TeddyCloud release, so Unraid offers each new release as a normal container update. Recommended.</TagDescription>
+  </Branch>
+  <Branch>
+    <Tag>rc</Tag>
+    <TagDescription>Release candidate. Always the newest candidate for the next release, published for testing before the release. Never moves latest.</TagDescription>
+  </Branch>
+  <Branch>
+    <Tag>nightly-develop</Tag>
+    <TagDescription>Development build of the develop branch. Features may be unfinished and settings may change without a release note.</TagDescription>
+  </Branch>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+  <Project>https://github.com/toniebox-reverse-engineering/teddycloud</Project>
+  <Overview>teddyCloud is an alternative server for your Toniebox, allowing you to host the cloud services locally. This gives you control over which data is sent to the original manufacturer's cloud, and lets you host your own figurine audio files on your NAS or any other server.
+
+A Toniebox only connects on port 443 and this cannot be changed. If the Unraid web interface or another container already uses port 443, set Network Type to a custom network (such as br0) and give TeddyCloud its own IP address. Your Toniebox must be set up to use this server and its certificates must be placed in the certs folder; follow the TeddyCloud guide: https://toniebox-reverse-engineering.github.io/docs/tools/teddycloud/
+
+The web interface has an optional login that is off by default. Do not expose TeddyCloud to the internet.</Overview>
+  <Category>MediaServer:Music MediaServer:Other</Category>
+  <WebUI>http://[IP]:[PORT:80]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/teddycloud.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/img/teddycloud.png</Icon>
+  <Config Name="Web UI (HTTP)" Target="80" Default="7780" Mode="tcp" Description="Port for the TeddyCloud web interface. Not used on a custom network, where the container's own IP serves port 80." Type="Port" Display="always" Required="true" Mask="false">7780</Config>
+  <Config Name="Toniebox (HTTPS)" Target="443" Default="443" Mode="tcp" Description="Port the Toniebox connects to. It must stay 443. If 443 is already in use on Unraid, use a custom network with its own IP instead." Type="Port" Display="always" Required="true" Mask="false">443</Config>
+  <Config Name="Web UI (HTTPS)" Target="8443" Default="8443" Mode="tcp" Description="Optional HTTPS port for the web interface." Type="Port" Display="advanced" Required="false" Mask="false">8443</Config>
+  <Config Name="config" Target="/teddycloud/config" Default="/mnt/user/appdata/teddycloud/config" Mode="rw" Description="Server and Toniebox settings" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/teddycloud/config</Config>
+  <Config Name="certs" Target="/teddycloud/certs" Default="/mnt/user/appdata/teddycloud/certs" Mode="rw" Description="Server and Toniebox certificates. Place the certificates dumped from your Toniebox here." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/teddycloud/certs</Config>
+  <Config Name="content" Target="/teddycloud/data/content" Default="/mnt/user/appdata/teddycloud/data/content" Mode="rw" Description="Audio content served to the Toniebox (the box's virtual SD card)" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/teddycloud/data/content</Config>
+  <Config Name="library" Target="/teddycloud/data/library" Default="/mnt/user/appdata/teddycloud/data/library" Mode="rw" Description="Your audio library" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/teddycloud/data/library</Config>
+  <Config Name="firmware" Target="/teddycloud/data/firmware" Default="/mnt/user/appdata/teddycloud/data/firmware" Mode="rw" Description="Firmware backups" Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdata/teddycloud/data/firmware</Config>
+  <Config Name="cache" Target="/teddycloud/data/cache" Default="/mnt/user/appdata/teddycloud/data/cache" Mode="rw" Description="Image cache for content images" Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdata/teddycloud/data/cache</Config>
+  <Config Name="custom_img" Target="/teddycloud/data/www/custom_img" Default="/mnt/user/appdata/teddycloud/data/www/custom_img" Mode="rw" Description="Custom images for the custom tonies list" Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdata/teddycloud/data/www/custom_img</Config>
+  <Config Name="plugins" Target="/teddycloud/data/www/plugins" Default="/mnt/user/appdata/teddycloud/data/www/plugins" Mode="rw" Description="Web plugins for TeddyCloud" Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/appdata/teddycloud/data/www/plugins</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="User ID the server runs as. TeddyCloud sets ownership of /teddycloud to this user and group on start." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Group ID the server runs as." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+</Container>
