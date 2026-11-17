@@ -2,6 +2,10 @@
 
 Community Application templates maintained by catduck.
 
+## Applications
+
+- [ghstats](templates/ghstats.xml): self-hosted GitHub repository traffic history and dashboards.
+
 ## Add this repository to Unraid
 
 1. Open the Unraid Apps tab.

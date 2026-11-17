@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>ghstats</Name>
+  <Repository>ghcr.io/vladkens/ghstats:latest</Repository>
+  <Registry>https://github.com/vladkens/ghstats/pkgs/container/ghstats</Registry>
+  <Branch>
+    <Tag>latest</Tag>
+    <TagDescription>Stable. Follows the newest ghstats release, so Unraid offers each new release as a normal container update. Recommended.</TagDescription>
+  </Branch>
+  <Branch>
+    <Tag>main</Tag>
+    <TagDescription>Development build of the main branch. May include unreleased changes.</TagDescription>
+  </Branch>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+  <Project>https://github.com/vladkens/ghstats</Project>
+  <Overview>ghstats keeps your GitHub repository traffic history beyond GitHub's 14 day limit. It polls the GitHub API every hour and stores views, clones, referrers, popular paths, stars, forks, issues, pull requests and release downloads in a local SQLite database, with per-repository dashboards, a JSON API, and embeddable SVG badges and cards.
+
+A GitHub token is required. GitHub's traffic API only works on repositories you can push to. Use a fine-grained token limited to your repositories with read-only "Administration" and "Metadata" permissions, or a classic token with the public_repo scope (full repo scope plus GHS_INCLUDE_PRIVATE=true for private repositories).
+
+The container runs as UID 100. If it cannot write its database, run once: chown -R 100:101 /mnt/user/appdata/ghstats
+
+The dashboard has no login. Do not expose it to the internet unless you only track public repositories, or put it behind an authenticating reverse proxy.</Overview>
+  <Category>Tools: Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:8080]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/ghstats.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/img/ghstats.png</Icon>
+  <Requires/>
+  <Config Name="Web UI" Target="8080" Default="8097" Mode="tcp" Description="Port for the ghstats dashboard." Type="Port" Display="always" Required="true" Mask="false">8097</Config>
+  <Config Name="Data" Target="/app/data" Default="/mnt/user/appdata/ghstats" Mode="rw" Description="SQLite database (ghstats.db). Must be writable by UID 100." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/ghstats</Config>
+  <Config Name="GitHub Token" Target="GITHUB_TOKEN" Default="" Mode="" Description="GitHub token. Fine-grained: Administration (read) and Metadata (read) on the repositories to track. Classic: public_repo, or repo for private repositories." Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="Include private repositories" Target="GHS_INCLUDE_PRIVATE" Default="false|true" Mode="" Description="Also collect private repositories the token can see. Keep the dashboard on your LAN if enabled." Type="Variable" Display="always" Required="false" Mask="false">false</Config>
+  <Config Name="Repository filter" Target="GHS_FILTER" Default="" Mode="" Description="Which repositories to collect, in GitHub search style. Examples: 'yourname/*', '!fork', 'yourname/* !fork !archived'. Empty collects every repository the token can access." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Public list filter" Target="GHS_SHOW" Default="" Mode="" Description="Which collected repositories appear on the dashboard pages and cards, e.g. 'stars:>=5 !fork'. Data for hidden repositories is still collected." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="Sync schedule" Target="GHS_CRON_SCHEDULE" Default="0 59 * * * *" Mode="" Description="Six-field cron schedule for pulling metrics. Default runs at minute 59 of every hour." Type="Variable" Display="advanced" Required="false" Mask="false">0 59 * * * *</Config>
+  <Config Name="Default sort" Target="GHS_SORT" Default="views_count|stars|forks|issues|prs|clones_count|downloads" Mode="" Description="Column the home page sorts by." Type="Variable" Display="advanced" Required="false" Mask="false">views_count</Config>
+  <Config Name="Disable version check" Target="GHS_DISABLE_VERSION_CHECK" Default="false|true" Mode="" Description="Stop ghstats from checking GitHub for a newer ghstats release." Type="Variable" Display="advanced" Required="false" Mask="false">false</Config>
+  <Config Name="Custom header links" Target="GHS_CUSTOM_LINKS" Default="" Mode="" Description="Optional header links: 'Label|https://url,Label2|https://url2'." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+</Container>
