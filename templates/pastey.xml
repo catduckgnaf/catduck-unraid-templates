@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Pastey</Name>
+<Repository>ghcr.io/catduckgnaf/pastey:latest</Repository>
+<Registry>https://github.com/catduckgnaf/pastey/pkgs/container/pastey</Registry>
+<Network>bridge</Network>
+<MyIP />
+<Shell>sh</Shell>
+<Privileged>false</Privileged>
+<Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+<Project>https://github.com/catduckgnaf/pastey</Project>
+<Overview>A lightweight, self-hosted paste platform (Pastebin alternative) with language detection and on-disk encryption. This fork exists because upstream Cesura/pastey has had no release since 2022, and the previous community image (arcscloud/pastey) was removed from Docker Hub. This build removes TensorFlow for a much smaller image, adds a default paste expiry and an expiry picker, supports IPv6 whitelist ranges, and defaults to dark mode.</Overview>
+<Category>Productivity: Tools:Utilities</Category>
+<WebUI>http://[IP]:[PORT:5000]/</WebUI>
+<TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/pastey.xml</TemplateURL>
+<Icon>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/img/pastey.png</Icon>
+<ExtraParams />
+<PostArgs />
+<CPUset />
+<DateInstalled>1741086522</DateInstalled>
+<DonateText>Donate</DonateText>
+<DonateLink>http://paypal.me/corneliousjd</DonateLink>
+<Requires />
+<Config Name="Web Interface" Target="5000" Default="5000" Mode="tcp" Description="" Type="Port" Display="always" Required="false" Mask="false">5000</Config>
+<Config Name="AppData" Target="/app/data" Default="/mnt/user/appdata/pastey" Mode="rw" Description="" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/pastey</Config>
+<Config Name="PASTEY_RESTRICT_PASTING" Target="PASTEY_RESTRICT_PASTING" Default="False" Mode="" Description="Enable/disable restricting of pasting to whitelisted users." Type="Variable" Display="always" Required="false" Mask="false">False</Config>
+<Config Name="PASTEY_RESTRICT_RAW_PASTING" Target="PASTEY_RESTRICT_RAW_PASTING" Default="True" Mode="" Description="Enable/disable restricting of pasting via /raw to whitelisted users." Type="Variable" Display="always" Required="false" Mask="false">True</Config>
+<Config Name="PASTEY_RATE_LIMIT" Target="PASTEY_RATE_LIMIT" Default="5/hour" Mode="" Description="Rate limit for pasting, for non-whitelisted users." Type="Variable" Display="always" Required="false" Mask="false">25/hour</Config>
+<Config Name="PASTEY_RECENT_PASTES" Target="PASTEY_RECENT_PASTES" Default="10" Mode="" Description="Number of recent pastes to show on the home page." Type="Variable" Display="always" Required="false" Mask="false">10</Config>
+<Config Name="PASTEY_BEHIND_PROXY" Target="PASTEY_BEHIND_PROXY" Default="False" Mode="" Description="Inform Pastey if it is behind a reverse proxy (nginx, etc.). If this is the case, it will rely on HTTP headers X-Real-IP or X-Forwarded-For. NOTE: Make sure your proxy config sets these values." Type="Variable" Display="always" Required="false" Mask="false">True</Config>
+<Config Name="PASTEY_USE_WHITELIST" Target="PASTEY_USE_WHITELIST" Default="True" Mode="" Description="Enable/disable whitelisting for admin tasks (view recent, delete, config)." Type="Variable" Display="always" Required="false" Mask="false">True</Config>
+<Config Name="PASTEY_WHITELIST_CIDR" Target="PASTEY_WHITELIST_CIDR" Default="" Mode="" Description="List of whitelisted IP addresses or networks (in CIDR format)." Type="Variable" Display="always" Required="false" Mask="false">127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16</Config>
+<Config Name="PASTEY_DEFAULT_THEME" Target="PASTEY_DEFAULT_THEME" Default="Dark|Light" Mode="" Description="Default theme for new visitors. Choose Dark or Light." Type="Variable" Display="always" Required="false" Mask="false">Dark</Config>
+<Config Name="PASTEY_DEFAULT_PASTE_EXPIRY" Target="PASTEY_DEFAULT_PASTE_EXPIRY" Default="72" Mode="" Description="Default paste expiry in hours. Pastes may choose a different expiry using the expiry picker." Type="Variable" Display="always" Required="false" Mask="false">72</Config>
+<Config Name="PASTEY_GUESS_THRESHOLD" Target="PASTEY_GUESS_THRESHOLD" Default="0.20" Mode="" Description="Threshold for automatic language detection guesses. If a result is below this value, it is treated as Plaintext." Type="Variable" Display="advanced" Required="false" Mask="false">0.20</Config>
+<TailscaleStateDir />
+</Container>
