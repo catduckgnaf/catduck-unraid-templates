@@ -1,0 +1,77 @@
+name: Publish Inferzero image
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Exact upstream Inferzero release tag to package
+        required: true
+        type: string
+  push:
+    paths:
+      - 'docker/inferzero/**'
+      - '.github/workflows/inferzero-image.yml'
+    tags:
+      - 'inferzero-*'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select release
+        id: release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_RELEASE: ${{ inputs.release }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -eu
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            release="$INPUT_RELEASE"
+          else
+            release="${REF_NAME#inferzero-}"
+          fi
+          case "$release" in
+            ''|*[!A-Za-z0-9._-]*) echo "Invalid release tag" >&2; exit 1 ;;
+          esac
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+      - name: Verify upstream release and capture Linux asset digest
+        id: asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ steps.release.outputs.release }}
+        run: |
+          set -eu
+          gh api "repos/rizagp/inferzero/releases/tags/$RELEASE" --jq '[.assets[] | select(.name | endswith("linux-x64.tar.gz"))][0] | [.name, .digest] | @tsv' > asset.tsv
+          IFS="$(printf '\t')" read -r name digest < asset.tsv
+          test -n "$name"
+          case "$digest" in sha256:*) echo "sha256=${digest#sha256:}" >> "$GITHUB_OUTPUT" ;; *) echo "Missing release asset sha256" >&2; exit 1 ;; esac
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/inferzero
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ steps.release.outputs.release }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: docker/inferzero
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            INFERZERO_RELEASE=${{ steps.release.outputs.release }}
+            INFERZERO_ASSET_SHA256=${{ steps.asset.outputs.sha256 }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
