@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>inferzero</Name>
+  <Repository>ghcr.io/catduckgnaf/inferzero:latest</Repository>
+  <Registry>https://github.com/catduckgnaf/catduck-unraid-templates/pkgs/container/inferzero</Registry>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/catduckgnaf/catduck-unraid-templates/issues</Support>
+  <Project>https://github.com/rizagp/inferzero</Project>
+  <Overview>Local inference server for Intel Arc GPUs using Intel's Level Zero and OpenCL runtime. This template uses a container image built and published from the reproducible Dockerfile in the catduck templates repository; it is not the locally built Uranium image. Install the required Unraid kernel separately: download the matching custom kernel release, follow its release instructions, and install it manually on the host before enabling GPU passthrough. Docker and Community Applications never install or modify the host kernel. No public kernel release link is available yet; do not install this template for GPU use until the matching release and its manual install and rollback instructions are published. Setup: set Model to a catalog key (default 4b) or a path to a GGUF file in the Models folder. Models download from Hugging Face into that persistent folder; model files can be several GB or more. The Cache folder stores compiled kernels and runtime state. Grant /dev/dri/renderD128 to the container through the GPU device setting and select the Intel render node that matches your GPU; set GPU count to the number of Intel GPUs intended for one model. Intel GPU inference only; NVIDIA is not an Inferzero backend. The Web UI and OpenAI-compatible API have no built-in authentication. Keep the web port on a trusted LAN or bind it to loopback behind a secured reverse proxy; do not expose it directly to the internet. The container runs as root, so files written to mapped folders may be root-owned. Full install, GPU, storage, security, and kernel guidance: https://github.com/catduckgnaf/catduck-unraid-templates#inferzero</Overview>
+  <Category>Tools:Utilities Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:8090]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/inferzero.xml</TemplateURL>
+  <Config Name="Web UI / API" Target="8090" Default="8090" Mode="tcp" Description="Web UI and OpenAI-compatible API. No built-in authentication; restrict access to a trusted network." Type="Port" Display="always" Required="true" Mask="false">8090</Config>
+  <Config Name="Models" Target="/root/.cache/huggingface" Default="/mnt/user/appdata/inferzero/models" Mode="rw" Description="Persistent model downloads from Hugging Face. Models may require several GB or more." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/inferzero/models</Config>
+  <Config Name="Inferzero cache" Target="/root/.inferzero" Default="/mnt/user/appdata/inferzero/cache" Mode="rw" Description="Persistent compiled GPU kernels and runtime state." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/inferzero/cache</Config>
+  <Config Name="Intel GPU render device" Target="/dev/dri/renderD128" Default="/dev/dri/renderD128" Mode="" Description="Intel GPU render node. Select the matching /dev/dri/renderD* node on this Unraid host." Type="Device" Display="always" Required="true" Mask="false">/dev/dri/renderD128</Config>
+  <Config Name="Model" Target="MODEL" Default="4b" Mode="" Description="Inferzero model catalog key (for example 4b) or a GGUF path accessible in the container." Type="Variable" Display="always" Required="true" Mask="false">4b</Config>
+  <Config Name="GPU count" Target="GPUS" Default="1" Mode="" Description="Number of Intel GPUs to split this model across. NVIDIA is not supported as an inference backend." Type="Variable" Display="advanced" Required="true" Mask="false">1</Config>
+  <Config Name="Server options" Target="SERVER_ARGS" Default="" Mode="" Description="Additional serverz options, for example --ctx 32768." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+</Container>
