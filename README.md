@@ -11,7 +11,7 @@ A small, maintained collection of Community Applications templates for useful se
 ## Template catalog
 
 - [Discord Repost History Bot](templates/discord-repost-history-bot.xml) — a Discord bot that saves message history so messages can be found and reposted later.
-- [Inferzero](templates/inferzero.xml) — local inference server for Intel Arc GPUs; GPU use requires the separately released and manually installed matching Unraid custom kernel. See [Inferzero setup and kernel safety](#inferzero).
+- [Inferzero](templates/inferzero.xml) — local inference server for Intel Arc GPUs. Standard GPU inference uses a compatible Intel driver in the host kernel; the experimental custom kernel is optional and adds PCI peer-to-peer (P2P) support. See [Inferzero setup and kernel safety](#inferzero).
 - [Mealie](templates/mealie.xml) — self-hosted recipe manager and meal planner.
 - [Pastey](templates/pastey.xml) — self-hosted paste service. This catduck build is based on upstream Cesura/pastey, which has had no release since 2022; the former community image `arcscloud/pastey` was removed from Docker Hub. It drops TensorFlow for a much smaller image, adds a default paste expiry and expiry picker, supports IPv6 whitelist ranges, and defaults to dark mode.
 - [Print Handy](templates/print-handy.xml) — local-first chat-to-print assistant for supported 3D printers; see the [Print Handy setup guide](https://catduckgnaf.github.io/print-handy-docs/).
@@ -22,9 +22,14 @@ A small, maintained collection of Community Applications templates for useful se
 
 Inferzero is an Intel GPU inference server. Its Docker image is built from the version-controlled recipe in [`docker/inferzero/`](docker/inferzero/) and published to GHCR by this repository's **Publish Inferzero** workflow. The template uses `ghcr.io/catduckgnaf/inferzero:latest`; no local Uranium image is used. An operator can also build the same image from the checked-in Dockerfile and select a specific upstream Inferzero release with the build argument `INFERZERO_RELEASE`.
 
-### Host kernel is a separate, manual installation
+### Host kernel and optional PCI P2P
 
-The GPU container needs a compatible Intel driver in the Unraid host kernel. The corresponding custom Unraid kernel release is maintained separately and is not published yet. **Do not install Inferzero for GPU use until that release is available.** When published, download and verify the release from its release page, read its exact version-matched installation and rollback instructions, and install it manually on the Unraid host before enabling GPU passthrough. Follow the release's rollback steps to restore the prior kernel if needed. Docker, this template, and Community Applications must never download, install, replace, or modify the host kernel. Do not guess a release URL or install a mismatched kernel.
+Inferzero's standard Intel GPU inference path uses the Intel driver supplied by a compatible Unraid host kernel; it does not require this repository's custom kernel. The separate experimental [Unraid P2P kernel v1.0.0 release](https://github.com/catduckgnaf/unraid-p2p-kernel/releases/tag/v1.0.0) provides optional PCI peer-to-peer (P2P) kernel variants for supported multi-GPU configurations. It is not required for ordinary inference, and installing it does not enable NVIDIA inference in Inferzero.
+
+Before using either experimental kernel variant, read the versioned [installation and rollback instructions](https://github.com/catduckgnaf/unraid-p2p-kernel/blob/v1.0.0/INSTALL.md), [downloads and checksums](https://github.com/catduckgnaf/unraid-p2p-kernel/blob/v1.0.0/README.md#downloads), and [build provenance](https://github.com/catduckgnaf/unraid-p2p-kernel/blob/v1.0.0/BUILD.md). These builds target Unraid 7.4.0 / Linux 6.18.60. The release supplies kernel images and module archives, not a stock `bzroot` or complete boot image. Neither variant has been boot tested; the NVIDIA variant's open modules have not been tested on NVIDIA hardware and require matching 580.196.07 userspace, which is not supplied. Preserve the stock boot entry and recovery path, and follow the published rollback instructions if needed.
+
+Kernel installation is a separate manual host operation. Docker, this template, and Community Applications must never download, install, replace, or modify the host kernel. Do not use a kernel that does not match the documented Unraid version.
+
 
 ### GPU, models, and storage
 
