@@ -4,13 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: Exact upstream Inferzero release tag to package
-        required: true
+        description: Exact upstream release tag (blank selects latest stable)
+        required: false
         type: string
   push:
-    paths:
-      - 'docker/inferzero/**'
-      - '.github/workflows/inferzero-image.yml'
     tags:
       - 'inferzero-*'
 
@@ -31,15 +28,16 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
         run: |
           set -eu
-          if [ "$EVENT_NAME" = workflow_dispatch ]; then
-            release="$INPUT_RELEASE"
-          else
-            release="${REF_NAME#inferzero-}"
+          requested="$INPUT_RELEASE"
+          if [ "$EVENT_NAME" = push ] && [[ "$GITHUB_REF" == refs/tags/inferzero-* ]]; then
+            requested="${REF_NAME#inferzero-}"
           fi
-          case "$release" in
-            ''|*[!A-Za-z0-9._-]*) echo "Invalid release tag" >&2; exit 1 ;;
-          esac
-          echo "release=$release" >> "$GITHUB_OUTPUT"
+          release_list=$(mktemp)
+          trap 'rm -f "$release_list"' EXIT
+          gh api "repos/rizagp/inferzero/releases?per_page=100" > "$release_list"
+          python3 .github/scripts/select_inferzero_release.py "$requested" < "$release_list" > release-selection.txt
+          cat release-selection.txt
+          while IFS='=' read -r key value; do echo "$key=$value" >> "$GITHUB_OUTPUT"; done < release-selection.txt
       - name: Verify upstream release and capture Linux asset digest
         id: asset
         env:
@@ -63,8 +61,8 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/inferzero
           tags: |
-            type=raw,value=latest
             type=raw,value=${{ steps.release.outputs.release }}
+            type=raw,value=latest,enable=${{ steps.release.outputs.latest }}
       - uses: docker/build-push-action@v6
         with:
           context: docker/inferzero
