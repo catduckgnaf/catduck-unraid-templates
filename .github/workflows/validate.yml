@@ -5,7 +5,10 @@ on:
     paths:
       - 'templates/*.xml'
       - '.github/workflows/validate.yml'
+      - '.github/workflows/inferzero-image.yml'
       - '.github/scripts/check.py'
+      - '.github/scripts/select_inferzero_release.py'
+      - '.github/scripts/test_select_inferzero_release.py'
   pull_request:
   workflow_dispatch:
 
@@ -24,3 +27,5 @@ jobs:
           for file in "${files[@]}"; do xmllint --noout "$file"; done
       - name: Check template conventions
         run: python3 .github/scripts/check.py --files templates/*.xml
+      - name: Test Inferzero release selection
+        run: python3 -m unittest discover -s .github/scripts -p 'test_select_inferzero_release.py'
