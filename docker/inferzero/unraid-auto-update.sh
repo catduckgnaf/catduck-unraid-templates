@@ -62,13 +62,19 @@ last_good=$(awk -F, '$2=="updated" || $2=="baseline" {v=$5} END {print v}' "$HIS
 docker tag "$old_id" "$IMAGE:rollback"
 log "updating $old_rel -> $new_rel"
 "$REBUILD" "$NAME" >/dev/null 2>&1
+rebuild_rc=$?
 
+healthy() { curl -s -m 5 "http://127.0.0.1:$PORT/health" | tr -d ' \n' | grep -q '"status":"ok"'; }
+
+# check IMAGE_ID: the container must run that exact image and answer a timed completion.
 check() {
+  running=$(docker inspect "$NAME" --format '{{.State.Running}} {{.Image}}' 2>/dev/null)
+  [ "$running" = "true $1" ] || { echo "container is not running image $1 (got: ${running:-no container})"; return 1; }
   for _ in $(seq 1 $((START_WAIT_MIN * 6))); do
-    curl -s -m 5 "http://127.0.0.1:$PORT/health" | grep -q '"ok"' && break
+    healthy && break
     sleep 10
   done
-  curl -s -m 5 "http://127.0.0.1:$PORT/health" | grep -q '"ok"' || { echo "no health after $START_WAIT_MIN min"; return 1; }
+  healthy || { echo "no healthy /health after $START_WAIT_MIN min"; return 1; }
   model=$(curl -s -m 10 "http://127.0.0.1:$PORT/v1/models" | sed -n 's/.*"model":"\([^"]*\)".*/\1/p' | head -n1)
   # The first request after a start warms kernels and caches; time the second one.
   for _ in 1 2; do
@@ -80,7 +86,11 @@ check() {
   echo "$tok_s"
 }
 
-if res=$(check); then
+image_bad=true
+if [ "$rebuild_rc" -ne 0 ]; then
+  # The rebuild itself failed, so this says nothing about the image: try it again next run.
+  reason="rebuild_container exited $rebuild_rc"; image_bad=false
+elif res=$(check "$new_id"); then
   tok_s=$res
   if [ -n "$last_good" ] && awk -v n="$tok_s" -v o="$last_good" -v p="$SLOWER_LIMIT_PCT" 'BEGIN {exit !(n < o * p / 100)}'; then
     reason="generation $tok_s tok/s against $last_good before"
@@ -97,12 +107,12 @@ fi
 # Roll back to the image that was running.
 log "check failed ($reason); rolling back to $old_rel"
 docker logs "$NAME" > "$STATE/failed-$new_rel.log" 2>&1 || true
-echo "$new_id" >> "$BAD"
+if [ "$image_bad" = true ]; then echo "$new_id" >> "$BAD"; skip="$new_rel is skipped until a newer image."; else skip="It will be tried again next run."; fi
 docker tag "$IMAGE:rollback" "$IMAGE:latest"
 "$REBUILD" "$NAME" >/dev/null 2>&1
 echo "$(date '+%F %T'),rolled_back,$new_rel,$new_id,${tok_s:-}" >> "$HIST"
-if back=$(check); then
-  note "Rolled back $new_rel" "$new_rel failed the check ($reason). Back on $old_rel ($back tok/s). $new_rel is skipped until a newer image." warning
+if back=$(check "$old_id"); then
+  note "Rolled back $new_rel" "$new_rel failed the check ($reason). Back on $old_rel ($back tok/s). $skip Log: $STATE/failed-$new_rel.log" warning
 else
   note "Rollback FAILED" "$new_rel failed ($reason) and $old_rel did not come back: $back. Check the inferzero container." alert
   exit 1
