@@ -56,17 +56,32 @@ fi
 # then refuse new connections from other hosts (Docker's DOCKER-USER chain; established
 # connections keep flowing) and let any request still running drain before the rebuild.
 # This script's own checks use 127.0.0.1, which does not pass through that chain.
+# The rule matches only this container's IP, so other containers on the same port are never
+# affected. A rebuilt container gets a new IP, so block() runs again after each rebuild.
 # The block is lifted when the script exits, after the health check or the rollback.
 is_busy() { props | grep -q '"busy":true'; }
-BLOCK=(-p tcp --dport "$PORT" -m conntrack --ctstate NEW -m comment --comment inferzero-auto-update -j REJECT --reject-with tcp-reset)
-unblock() { while iptables -D DOCKER-USER "${BLOCK[@]}" 2>/dev/null; do :; done; }
+TAG=inferzero-auto-update
+unblock() {
+  local rule args
+  iptables -S DOCKER-USER 2>/dev/null | grep -- "--comment $TAG" | sed 's/^-A /-D /' | while read -r rule; do
+    read -ra args <<< "$rule"
+    iptables "${args[@]}"
+  done
+}
+block() {
+  local ip
+  ip=$(docker inspect "$NAME" --format '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' 2>/dev/null | awk '{print $1}')
+  [ -n "$ip" ] || return 1
+  unblock
+  iptables -I DOCKER-USER -d "$ip" -p tcp --dport "$PORT" -m conntrack --ctstate NEW \
+    -m comment --comment "$TAG" -j REJECT --reject-with tcp-reset
+}
 for _ in $(seq 1 "$BUSY_WAIT_MIN"); do
   is_busy || break
   log "busy; waiting"; sleep 60
 done
 trap unblock EXIT
-unblock
-iptables -I DOCKER-USER "${BLOCK[@]}" || { log "could not block new connections; trying tomorrow"; docker tag "$old_id" "$IMAGE:latest"; exit 0; }
+block || { log "could not block new connections; trying tomorrow"; docker tag "$old_id" "$IMAGE:latest"; exit 0; }
 for _ in $(seq 1 $((DRAIN_WAIT_MIN * 12))); do
   is_busy || break
   sleep 5
@@ -82,6 +97,7 @@ docker tag "$old_id" "$IMAGE:rollback"
 log "updating $old_rel -> $new_rel"
 "$REBUILD" "$NAME" >/dev/null 2>&1
 rebuild_rc=$?
+block || true   # the new container's IP, held until the check passes or the rollback finishes
 
 healthy() { curl -s -m 5 "http://127.0.0.1:$PORT/health" | tr -d ' \n' | grep -q '"status":"ok"'; }
 
@@ -129,6 +145,7 @@ docker logs "$NAME" > "$STATE/failed-$new_rel.log" 2>&1 || true
 if [ "$image_bad" = true ]; then echo "$new_id" >> "$BAD"; skip="$new_rel is skipped until a newer image."; else skip="It will be tried again next run."; fi
 docker tag "$IMAGE:rollback" "$IMAGE:latest"
 "$REBUILD" "$NAME" >/dev/null 2>&1
+block || true
 echo "$(date '+%F %T'),rolled_back,$new_rel,$new_id,${tok_s:-}" >> "$HIST"
 if back=$(check "$old_id"); then
   note "Rolled back $new_rel" "$new_rel failed the check ($reason). Back on $old_rel ($back tok/s). $skip Log: $STATE/failed-$new_rel.log" warning
