@@ -17,7 +17,8 @@ HIST=$STATE/history.csv
 BAD=$STATE/bad-images
 NOTIFY=/usr/local/emhttp/webGui/scripts/notify
 REBUILD=/usr/local/emhttp/plugins/dynamix.docker.manager/scripts/rebuild_container
-BUSY_WAIT_MIN=30        # wait this long for an in-flight request to finish
+BUSY_WAIT_MIN=30        # wait this long for a quiet moment before blocking new connections
+DRAIN_WAIT_MIN=10       # then wait this long, with new connections blocked, for a running request
 START_WAIT_MIN=15       # model load and expert cache fill
 SLOWER_LIMIT_PCT=60     # roll back below this share of the last good tokens/s
 
@@ -47,13 +48,27 @@ if grep -qx "$new_id" "$BAD"; then
   exit 0
 fi
 
-# Do not cut off a request in flight.
+# Do not cut off a request in flight. First wait for a quiet moment without blocking anyone,
+# then refuse new connections from other hosts (Docker's DOCKER-USER chain; established
+# connections keep flowing) and let any request still running drain before the rebuild.
+# This script's own checks use 127.0.0.1, which does not pass through that chain.
+# The block is lifted when the script exits, after the health check or the rollback.
+is_busy() { props | grep -q '"busy":true'; }
+BLOCK=(-p tcp --dport "$PORT" -m conntrack --ctstate NEW -m comment --comment inferzero-auto-update -j REJECT --reject-with tcp-reset)
+unblock() { while iptables -D DOCKER-USER "${BLOCK[@]}" 2>/dev/null; do :; done; }
 for _ in $(seq 1 "$BUSY_WAIT_MIN"); do
-  props | grep -q '"busy":true' || break
+  is_busy || break
   log "busy; waiting"; sleep 60
 done
-if props | grep -q '"busy":true'; then
-  log "still busy after $BUSY_WAIT_MIN min; trying tomorrow"
+trap unblock EXIT
+unblock
+iptables -I DOCKER-USER "${BLOCK[@]}" || { log "could not block new connections; trying tomorrow"; docker tag "$old_id" "$IMAGE:latest"; exit 0; }
+for _ in $(seq 1 $((DRAIN_WAIT_MIN * 12))); do
+  is_busy || break
+  sleep 5
+done
+if is_busy; then
+  log "a request is still running after $DRAIN_WAIT_MIN min with new connections blocked; trying tomorrow"
   docker tag "$old_id" "$IMAGE:latest"
   exit 0
 fi
