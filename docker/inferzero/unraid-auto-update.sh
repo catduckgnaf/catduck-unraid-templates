@@ -25,6 +25,10 @@ SLOWER_LIMIT_PCT=60     # roll back below this share of the last good tokens/s
 mkdir -p "$STATE"; touch "$BAD"
 [ -f "$HIST" ] || echo "date,result,release,image,tok_s" > "$HIST"
 log() { echo "$(date '+%F %T') $*"; }
+# One run at a time: a second run must never touch the first run's connection block.
+# The lock lives on the open file descriptor, so it is released however this script exits.
+exec 9>"$STATE/lock"
+flock -n 9 || { log "another run is in progress; exiting"; exit 0; }
 note() { "$NOTIFY" -e "Inferzero auto-update" -s "$1" -d "$2" -i "$3" >/dev/null 2>&1 || true; }
 release_of() { docker run --rm --entrypoint /bin/sh "$1" -c 'head -n1 /opt/inferzero/bin/PREBUILT.txt' 2>/dev/null | awk '{print $2}' | cut -d- -f1; }
 props() { curl -s -m 10 "http://127.0.0.1:$PORT/props"; }
