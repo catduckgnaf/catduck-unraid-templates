@@ -70,8 +70,11 @@ check() {
   done
   curl -s -m 5 "http://127.0.0.1:$PORT/health" | grep -q '"ok"' || { echo "no health after $START_WAIT_MIN min"; return 1; }
   model=$(curl -s -m 10 "http://127.0.0.1:$PORT/v1/models" | sed -n 's/.*"model":"\([^"]*\)".*/\1/p' | head -n1)
-  out=$(curl -s -m 300 "http://127.0.0.1:$PORT/v1/chat/completions" -H 'Content-Type: application/json' \
-    -d "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"Explain how PCIe lanes are allocated in a dual socket server, in detail.\"}],\"max_tokens\":200,\"temperature\":0,\"stream\":false}")
+  # The first request after a start warms kernels and caches; time the second one.
+  for _ in 1 2; do
+    out=$(curl -s -m 300 "http://127.0.0.1:$PORT/v1/chat/completions" -H 'Content-Type: application/json' \
+      -d "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"Explain how PCIe lanes are allocated in a dual socket server, in detail.\"}],\"max_tokens\":200,\"temperature\":0,\"stream\":false}")
+  done
   tok_s=$(echo "$out" | sed -n 's/.*"predicted_per_second":\([0-9.]*\).*/\1/p' | head -n1)
   [ -n "$tok_s" ] || { echo "test completion failed: $(echo "$out" | head -c 200)"; return 1; }
   echo "$tok_s"
@@ -93,6 +96,7 @@ fi
 
 # Roll back to the image that was running.
 log "check failed ($reason); rolling back to $old_rel"
+docker logs "$NAME" > "$STATE/failed-$new_rel.log" 2>&1 || true
 echo "$new_id" >> "$BAD"
 docker tag "$IMAGE:rollback" "$IMAGE:latest"
 "$REBUILD" "$NAME" >/dev/null 2>&1
