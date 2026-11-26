@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>ps5upload</Name>
+  <Repository>ghcr.io/phantomptr/ps5upload-engine-webui:latest</Repository>
+  <Registry>https://github.com/phantomptr/ps5upload/pkgs/container/ps5upload-engine-webui</Registry>
+  <Network>host</Network>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+  <Project>https://github.com/phantomptr/ps5upload</Project>
+  <Overview>PS5Upload is an upstream web interface and engine for managing files on a compatible PlayStation 5. This catduck Community Applications template uses the upstream container image and is not endorsed by the upstream project. The Web UI and API have no password and can perform sensitive file operations. Host networking is used for the app's network requirements. Access is restricted to loopback by default; before using the Web UI from another device, set Allowed client IPs to only the trusted client addresses or CIDRs that need access. Never forward the port or expose it to the internet. Optional package-folder mounts are read-only. The container runs as UID 99 and GID 100; the appdata folder must be writable by that account. This repository template is not an approval or listing in Unraid's separate public template catalog.</Overview>
+  <Category>Tools:Utilities GameServers:</Category>
+  <WebUI>http://[IP]:19113/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/ps5upload.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/phantomptr/ps5upload/main/branding/png/icon-1024.png</Icon>
+  <ExtraParams>--user 99:100 --restart unless-stopped --log-driver json-file --log-opt max-size=10m --log-opt max-file=3</ExtraParams>
+  <Config Name="Appdata" Target="/data" Default="/mnt/user/appdata/ps5upload" Mode="rw" Description="Persistent settings, device identity, history, and cache. The host directory must be writable by UID 99 and GID 100." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/ps5upload</Config>
+  <Config Name="Allowed client IPs" Target="PS5UPLOAD_ALLOW_IP" Default="127.0.0.1" Mode="" Description="Comma-separated trusted client IP addresses or CIDRs. Defaults to loopback only. The Web UI and API have no password and can perform sensitive file operations. Add only clients that need access. Never use 0.0.0.0/0 or expose this service to the internet." Type="Variable" Display="always" Required="true" Mask="false">127.0.0.1</Config>
+  <Config Name="PS5 address" Target="PS5_ADDR" Default="" Mode="" Description="Optional console address. Leave blank unless you choose to configure one." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="PS5 packages" Target="/pkgs/ps5" Default="" Mode="ro" Description="Optional existing host folder. The container receives read-only access." Type="Path" Display="always" Required="false" Mask="false"/>
+  <Config Name="PS4 packages" Target="/pkgs/ps4" Default="" Mode="ro" Description="Optional existing host folder. The container receives read-only access." Type="Path" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Package browser roots" Target="PS5UPLOAD_BROWSE_ROOTS" Default="" Mode="" Description="Optional comma-separated container paths for the file browser, such as /pkgs/ps5,/pkgs/ps4. Use only paths you mapped." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+</Container>
