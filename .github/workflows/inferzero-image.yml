@@ -123,6 +123,8 @@ jobs:
             cd /opt/inferzero
             for b in serverz runz mgpu_probe; do test -x "bin/$b" || { echo "missing bin/$b" >&2; exit 1; }; done
             test -x zero-launcher.sh || { echo "missing zero-launcher.sh" >&2; exit 1; }
+            command -v pdfinfo >/dev/null || { echo "missing pdfinfo (poppler-utils)" >&2; exit 1; }
+            command -v pdftoppm >/dev/null || { echo "missing pdftoppm (poppler-utils)" >&2; exit 1; }
             if ldd bin/serverz | grep "not found"; then echo "serverz has unresolved libraries" >&2; exit 1; fi
             echo "smoke test passed: $(cat bin/PREBUILT.txt 2>/dev/null | head -n 1)"
           '
