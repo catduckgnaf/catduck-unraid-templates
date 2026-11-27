@@ -11,6 +11,7 @@ A small, maintained collection of Community Applications templates for useful se
 ## Template catalog
 
 - [Discord Repost History Bot](templates/discord-repost-history-bot.xml) — a Discord bot that saves message history so messages can be found and reposted later.
+- [Global Law US MCP](templates/global-law-us-mcp.xml) — self-hosted MCP server for U.S. and Puerto Rico law, built on Lexifina's open global-law corpus; serves only the jurisdictions you choose and updates itself. See the [project README](https://github.com/catduckgnaf/global-law-us-mcp).
 - [Inferzero](templates/inferzero.xml) — local inference server for Intel Arc GPUs. Standard GPU inference uses a compatible Intel driver in the host kernel; the experimental custom kernel is optional and adds PCI peer-to-peer (P2P) support. See [Inferzero setup and kernel safety](#inferzero).
 - [Mealie](templates/mealie.xml) — self-hosted recipe manager and meal planner.
 - [Pastey](templates/pastey.xml) — self-hosted paste service. This catduck build is based on upstream Cesura/pastey, which has had no release since 2022; the former community image `arcscloud/pastey` was removed from Docker Hub. It drops TensorFlow for a much smaller image, adds a default paste expiry and expiry picker, supports IPv6 whitelist ranges, and defaults to dark mode.
