@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>global-law-us-mcp</Name>
+  <Repository>ghcr.io/catduckgnaf/global-law-us-mcp:latest</Repository>
+  <Registry>https://github.com/catduckgnaf/global-law-us-mcp/pkgs/container/global-law-us-mcp</Registry>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <Support>https://forums.unraid.net/topic/138058-support-catduck-templates/</Support>
+  <Project>https://github.com/catduckgnaf/global-law-us-mcp</Project>
+  <Overview>A self-hosted MCP server for United States and Puerto Rico law, built on Lexifina's open global-law corpus and server. Point an AI assistant or agent that supports MCP at it to search and read federal and state statutes, regulations and, if you add them, court decisions, with provision history by date.
+
+Lexifina's corpus covers many countries. This container checks out and serves only the jurisdictions you choose (U.S. federal and state law plus Puerto Rico by default), and updates itself from upstream on a schedule. Research queries are answered from the local copy and never leave your network; only the updater talks to GitHub.
+
+Clients connect over Streamable HTTP at http://[IP]:8096/mcp (SSE at /sse). Set Allowed hosts to the address and port clients use. The first start downloads several GB into the data path; case law adds much more and is only added when named in Extra corpora. There is no web interface. Not affiliated with Lexifina.</Overview>
+  <Category>Productivity: Tools:</Category>
+  <TemplateURL>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/global-law-us-mcp.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/catduckgnaf/catduck-unraid-templates/main/templates/img/global-law-us-mcp.png</Icon>
+  <Config Name="MCP port" Target="8096" Default="8096" Mode="tcp" Description="Host port for MCP clients (Streamable HTTP at /mcp, SSE at /sse)" Type="Port" Display="always" Required="true" Mask="false">8096</Config>
+  <Config Name="Data" Target="/data" Default="/mnt/user/appdata/global-law-us-mcp" Mode="rw" Description="Holds the law checkout (several GB; tens of GB with case law). A share on the array is fine." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/global-law-us-mcp</Config>
+  <Config Name="Allowed hosts" Target="ALLOWED_HOSTS" Default="" Mode="" Description="Space-separated host:port values clients use to reach this server, for example 192.168.1.10:8096 tower:8096. Required for access from other machines." Type="Variable" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="Jurisdictions" Target="JURISDICTIONS" Default="united-states puerto-rico" Mode="" Description="Jurisdictions to check out and serve: country folders, levels such as united-states/federal, or corpus paths. Only these are served." Type="Variable" Display="always" Required="true" Mask="false">united-states puerto-rico</Config>
+  <Config Name="Extra corpora" Target="EXTRA_CORPORA" Default="" Mode="" Description="Optional extra corpora, usually case law, for example united-states/connecticut/caselaw united-states/supreme-court/caselaw. Case law is only added when named and can be very large." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Update interval (hours)" Target="UPDATE_INTERVAL_HOURS" Default="24" Mode="" Description="How often the checkout follows upstream; the server restarts after an update that changed anything. 0 disables updates." Type="Variable" Display="advanced" Required="false" Mask="false">24</Config>
+  <Config Name="History-only corpora" Target="NO_FILES_CORPORA" Default="" Mode="" Description="Corpora to add as history only (no files written), much faster for very large case law sets." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="Auth token" Target="MCP_PROXY_AUTH_TOKEN" Default="" Mode="" Description="Optional shared bearer token. When set, clients must send Authorization: Bearer with this token." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
+</Container>
