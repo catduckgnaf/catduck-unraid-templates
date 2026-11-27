@@ -125,6 +125,12 @@ jobs:
             test -x zero-launcher.sh || { echo "missing zero-launcher.sh" >&2; exit 1; }
             command -v pdfinfo >/dev/null || { echo "missing pdfinfo (poppler-utils)" >&2; exit 1; }
             command -v pdftoppm >/dev/null || { echo "missing pdftoppm (poppler-utils)" >&2; exit 1; }
+            command -v ffmpeg >/dev/null || { echo "missing ffmpeg" >&2; exit 1; }
+            command -v ffprobe >/dev/null || { echo "missing ffprobe" >&2; exit 1; }
+            printf "%s" "/9j/4AAQSkZJRgABAgAAAQABAAD//gAQTGF2YzYyLjExLjEwMAD/2wBDAAgEBAQEBAUFBQUFBQYGBgYGBgYGBgYGBgYGBgYHBwcICAgHBwcGBgcHCAgICAkJCQgICAgJCQoKCgwMCwsODg4RERT/xABMAAEBAAAAAAAAAAAAAAAAAAAABgEBAQAAAAAAAAAAAAAAAAAABgcQAQAAAAAAAAAAAAAAAAAAAAARAQAAAAAAAAAAAAAAAAAAAAD/wAARCAAQABADASIAAhEAAxEA/9oADAMBAAIRAxEAPwCLAE1/f//Z" | base64 -d > /tmp/ffmpeg-smoke.jpg
+            ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of csv=s=x:p=0 /tmp/ffmpeg-smoke.jpg | grep -Fx "mjpegx16x16"
+
+            ffmpeg -v error -i /tmp/ffmpeg-smoke.jpg -frames:v 1 -f null -
             if ldd bin/serverz | grep "not found"; then echo "serverz has unresolved libraries" >&2; exit 1; fi
             echo "smoke test passed: $(cat bin/PREBUILT.txt 2>/dev/null | head -n 1)"
           '

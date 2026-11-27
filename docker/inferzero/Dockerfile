@@ -14,7 +14,7 @@ RUN set -eux; \
     . /etc/os-release; \
     printf 'Types: deb\nURIs: https://ppa.launchpadcontent.net/kobuk-team/intel-graphics/ubuntu\nSuites: %s\nComponents: main\nSigned-By: /etc/apt/keyrings/kobuk-team.asc\n' "$VERSION_CODENAME" > /etc/apt/sources.list.d/kobuk-team.sources; \
     apt-get update; \
-    apt-get install -y --no-install-recommends intel-opencl-icd libze-intel-gpu1 libze1 ocl-icd-libopencl1 libgomp1 poppler-utils; \
+    apt-get install -y --no-install-recommends intel-opencl-icd libze-intel-gpu1 libze1 ocl-icd-libopencl1 libgomp1 ffmpeg poppler-utils; \
     rm -rf /var/lib/apt/lists/*
 RUN set -eux; \
     test -n "$INFERZERO_RELEASE"; \
